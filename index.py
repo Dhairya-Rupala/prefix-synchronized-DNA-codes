@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import tkinter.font as font
+import tkinter.scrolledtext as scrolledtext
 global window
 
 
@@ -43,7 +44,9 @@ class Mywindow:
             window, text='Please Choose the task', font=labelFont)
         self.btn1 = Button(window, text='Execute task',
                            command=self.compute, font=labelFont)
-        self.input1 = Text(window, height=3, width=20)
+        self.input1 = scrolledtext.ScrolledText(window, undo=True, width=30,
+                                                height=3)
+        self.input1['font'] = ('consolas', '12')
         self.input2 = Entry()
         self.input3 = Entry()
         task = IntVar()
@@ -106,7 +109,9 @@ class Mywindow:
                 self.label5 = Label(
                     window, text=f'Encoded Message is', font=font.Font(family='Arial', size=10))
                 self.label5.place(x=210, y=425)
-                self.outTxt = Text(window, height=4, width=20)
+                self.outTxt = scrolledtext.ScrolledText(window, undo=True, width=30,
+                                                        height=4)
+                self.outTxt['font'] = ('consolas', '12')
                 self.outTxt.insert(END, encoded_output)
                 self.outTxt.place(x=430, y=425)
             else:
@@ -130,7 +135,9 @@ class Mywindow:
                 self.label5 = Label(
                     window, text='Decoded Message is', font=font.Font(family='Arial', size=10))
                 self.label5.place(x=210, y=425)
-                self.outTxt = Text(window, height=4, width=20)
+                self.outTxt = scrolledtext.ScrolledText(window, undo=True, width=30,
+                                                        height=4)
+                self.outTxt['font'] = ('consolas', '12')
                 self.outTxt.insert(END, decoded_output)
                 self.outTxt.place(x=430, y=425)
 
