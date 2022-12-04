@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import tkinter.font as font
 import tkinter.scrolledtext as scrolledtext
+from tkinter import filedialog as fd
 global window
 
 
@@ -24,7 +25,7 @@ class Mywindow:
         titleFont = font.Font(family='Helvetica', size=25, weight='bold')
         subtitleFont = font.Font(family='Arial', size=12, weight='bold')
         labelFont = font.Font(family='Arial', size=10)
-        self.taskFlag, self.msg, self.address_sequence, self.l = 0, None, None, None
+        self.taskFlag, self.msg, self.address_sequence, self.l, self.fname = 0, None, None, None, ""
         self.label_title = Label(
             window, text='DNA Storage and Security', font=titleFont)
         self.label_subtitle = Label(
@@ -35,8 +36,10 @@ class Mywindow:
         self.label_subtitle.place(x=320, y=100)
         self.label_mentor.place(x=600, y=570)
 
+        # self.label1 = Label(
+        #     window, text='Message to encode or decode', font=labelFont)
         self.label1 = Label(
-            window, text='Message to encode or decode', font=labelFont)
+            window, text='Upload text file', font=labelFont)
         self.label2 = Label(
             window, text='Address Sequence', font=labelFont)
         self.label3 = Label(window, text='Value of l', font=labelFont)
@@ -44,9 +47,11 @@ class Mywindow:
             window, text='Please Choose the task', font=labelFont)
         self.btn1 = Button(window, text='Execute task',
                            command=self.compute, font=labelFont)
-        self.input1 = scrolledtext.ScrolledText(window, undo=True, width=30,
-                                                height=3)
-        self.input1['font'] = ('consolas', '12')
+        # self.input1 = scrolledtext.ScrolledText(window, undo=True, width=30,
+        #                                         height=3)
+        # self.input1['font'] = ('consolas', '12')
+        self.input1 = Button(window, text="Upload",
+                             command=self.select_files)
         self.input2 = Entry()
         self.input3 = Entry()
         task = IntVar()
@@ -65,12 +70,43 @@ class Mywindow:
         self.radio2.place(x=495, y=315)
         self.btn1.place(x=210, y=375)
 
+    def set_msg(self, file):
+        if file:
+            self.input1['text'] = file.name.split("/")[-1]
+            content = file.readlines()
+            self.msg = "".join(content)
+            self.fname = file.name.split("/")[-1]
+
+    def select_files(self):
+        filetypes = (
+            ('text files', '*.txt'),
+        )
+
+        f = fd.askopenfile(
+            title='Open files',
+            initialdir='/',
+            filetypes=filetypes)
+        self.set_msg(f)
+
     def set_task(self, task):
         self.taskFlag = int(task.get())
+        self.input1["text"] = "Upload"
+
+    def write_encoded_file(self, data):
+        fname = self.fname.replace("_encoded", "")
+        fname = fname.replace(".txt", "")
+        file = open(f"{fname}_encoded.txt", "w")
+        file.write(data)
+
+    def write_decoded_file(self, data):
+        fname = self.fname.replace("_encoded", "")
+        fname = fname.replace(".txt", "")
+        file = open(f'{fname}_decoded.txt', "w")
+        file.write(data)
 
     def compute(self):
         task = self.taskFlag
-        self.msg = self.input1.get("1.0", 'end-1c')
+        # self.msg = self.input1.get("1.0", 'end-1c')
         self.address_sequence = self.input2.get()
         self.l = self.input3.get()
         n = len(self.address_sequence)
@@ -101,19 +137,21 @@ class Mywindow:
                     encoded_seqs.append(encoded_seq)
 
                 encoded_output = "".join(encoded_seqs)
+
                 if hasattr(self, "label5"):
                     self.label5.destroy()
                 if hasattr(self, "outTxt"):
                     self.outTxt.destroy()
 
                 self.label5 = Label(
-                    window, text=f'Encoded Message is', font=font.Font(family='Arial', size=10))
+                    window, text=f'Encoded file is saved as {self.fname.replace(".txt","")}_encoded.txt', font=font.Font(family='Arial', size=10))
                 self.label5.place(x=210, y=425)
-                self.outTxt = scrolledtext.ScrolledText(window, undo=True, width=30,
-                                                        height=4)
-                self.outTxt['font'] = ('consolas', '12')
-                self.outTxt.insert(END, encoded_output)
-                self.outTxt.place(x=430, y=425)
+                # self.outTxt = scrolledtext.ScrolledText(window, undo=True, width=30,
+                #                                         height=4)
+                # self.outTxt['font'] = ('consolas', '12')
+                # self.outTxt.insert(END, encoded_output)
+                # self.outTxt.place(x=430, y=425)
+                self.write_encoded_file(encoded_output)
             else:
                 decoded_seqs = []
                 for i in range(0, len(self.msg), self.l):
@@ -133,13 +171,14 @@ class Mywindow:
                 if hasattr(self, "outTxt"):
                     self.outTxt.destroy()
                 self.label5 = Label(
-                    window, text='Decoded Message is', font=font.Font(family='Arial', size=10))
+                    window, text=f'Decoded file is saved as {self.fname.replace("_encoded","").replace(".txt","")}_decoded.txt', font=font.Font(family='Arial', size=10))
                 self.label5.place(x=210, y=425)
-                self.outTxt = scrolledtext.ScrolledText(window, undo=True, width=30,
-                                                        height=4)
-                self.outTxt['font'] = ('consolas', '12')
-                self.outTxt.insert(END, decoded_output)
-                self.outTxt.place(x=430, y=425)
+                # self.outTxt = scrolledtext.ScrolledText(window, undo=True, width=30,
+                #                                         height=4)
+                # self.outTxt['font'] = ('consolas', '12')
+                # self.outTxt.insert(END, decoded_output)
+                # self.outTxt.place(x=430, y=425)
+                self.write_decoded_file(decoded_output)
 
     def convert_ternary(self, num):
         res = ""
@@ -257,4 +296,5 @@ if __name__ == "__main__":
     mywindow = Mywindow(window)
     window.title('Prefix Synchronized codes')
     window.geometry("800x600+10+10")
+    window.resizable(False, False)
     window.mainloop()
